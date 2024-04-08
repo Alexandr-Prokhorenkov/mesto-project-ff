@@ -1,21 +1,21 @@
-function openPopUp(element) {//функция открытия модального окна
+function openPopUp(element) {
+  //функция открытия модального окна
   element.classList.add("popup_is-opened");
-  document.addEventListener('keydown', closeByEscape)
+  document.addEventListener("keydown", closeByEscape);
 }
 
-function closePopUp(element) {//функция закрытия модального окна
+function closePopUp(element) {
+  //функция закрытия модального окна
   element.classList.remove("popup_is-opened");
-  document.removeEventListener('keydown', closeByEscape)
+  document.removeEventListener("keydown", closeByEscape);
 }
 
-function closeByEscape(event) {//функция закрытия по Escape
-    if (event.key === "Escape") {
-      const openedPopUp = document.querySelector(".popup_is-opened");
-        closePopUp(openedPopUp);
-    }
+function closeByEscape(event) {
+  //функция закрытия по Escape
+  if (event.key === "Escape") {
+    const openedPopUp = document.querySelector(".popup_is-opened");
+    closePopUp(openedPopUp);
   }
+}
 
-export {
-  openPopUp,
-  closePopUp,
-};
+export { openPopUp, closePopUp };
