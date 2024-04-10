@@ -130,6 +130,7 @@ export function clearValidation(formElement, validationConfig) {
 
   if (buttonElement.classList.contains(validationConfig.inactiveButtonClass)) {
     buttonElement.classList.remove(validationConfig.inactiveButtonClass);
+    buttonElement.setAttribute('disabled', true);
   }
 }
 
