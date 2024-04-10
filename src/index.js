@@ -66,7 +66,7 @@ const loadingsCards = (
   });
 };
 
-const userDate = (userObject, image, description, title) => {
+const updateUserInfo = (userObject, image, description, title) => {
   image.style.backgroundImage = `url('${userObject.avatar}')`;
   description.textContent = userObject.about;
   title.textContent = userObject.name;
@@ -74,15 +74,15 @@ const userDate = (userObject, image, description, title) => {
 
 loadData().then(([userDataObject, cardsDataObject]) => {
   const userId = userDataObject._id; //вытавскиваем свой Id и передаем его loadingsCards для проверки моя/не моя карточка
-  userDate(userDataObject, profileImage, profileDescription, profileTitle);
+  updateUserInfo(userDataObject, profileImage, profileDescription, profileTitle);
   loadingsCards(
     cardsDataObject,
     handleLikeButton,
     handleDeleteButton,
     handleImageClick,
     userId
-  );
-});
+  )})
+  .catch(apiErrorHandler)
 
 function handleDeleteButton(event) { //открываем модалку  для удаления карточки
   const cardId = event.target.dataset.cardId;
@@ -93,9 +93,11 @@ function handleDeleteButton(event) { //открываем модалку  для
   );
   confirmDeleteButton.addEventListener("click", function () {
     deleteCardFromServer(cardId) // Вызываем функцию удаления карточки с сервера
-    .catch(apiErrorHandler)
+    .then(() => {
     closePopUp(popUpDelete);
     event.target.closest(".card").remove();
+    })
+    .catch(apiErrorHandler)
   });
 }
 
@@ -113,21 +115,22 @@ function handleFormSubmit(evt) {
   const userName = nameInput.value; //значение имени из инпута
   const userJob = jobInput.value; //значение должности из инпута
   const submitButton = profile.querySelector(".popup__button");
-  profileTitle.textContent = userName; //заменяем дефолтные значения на странице на введенные
-  profileDescription.textContent = userJob; //заменяем дефолтные значения на странице на введенные
   renderLoading(true, submitButton); // Устанавливаем текст кнопки на "Сохранение..."
   saveProfileData(userName, userJob) //сохраняем данные на сервере
-    .finally(() => {
-      renderLoading(false, submitButton); // Возвращаем текст кнопки на исходное значение
+    .then(() => {
+  profileTitle.textContent = userName; //заменяем дефолтные значения на странице на введенные
+  profileDescription.textContent = userJob; //заменяем дефолтные значения на странице на введенные
     })
-  .catch(apiErrorHandler)
-  closePopUp(popUpProfile); //применяем функцию закрытия модального окна
+    .catch(apiErrorHandler)
+    .finally(() => {
+  renderLoading(false, submitButton); // Возвращаем текст кнопки на исходное значение
+  closePopUp(popUpProfile); 
+  });
 }
 
 function handleAddCardFormSubmit() {
   //функция открытия формы добавления карточек
   openPopUp(popUpAddImage);
-  enableValidation(validationConfig);
   clearValidation(newPlace, validationConfig);
 }
 
@@ -222,11 +225,12 @@ avatar.addEventListener("submit", function (evt) {
       // Обновляем src изображения на странице
       profileImage.style.backgroundImage = `url(${data.avatar})`;
       // Закрываем модальное окно после успешного изменения аватара
-      closePopUp(popUpAddAvatar);
+      
     })
     .catch(apiErrorHandler)
     .finally(() => {
       renderLoading(false, submitButton); // Возвращаем текст кнопки на исходное значение
+      closePopUp(popUpAddAvatar);
     });
 });
 
