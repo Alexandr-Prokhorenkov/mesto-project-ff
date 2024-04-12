@@ -9,7 +9,7 @@ import {
 } from "./components/api.js";
 
 import { enableValidation, clearValidation } from "./components/validation.js";
-import { createCard, handleLikeButton } from "./components/card.js";
+import { createCard, handleLikeButton, deleteCard } from "./components/card.js";
 import { openPopUp, closePopUp } from "./components/modal.js";
 import {apiErrorHandler} from "./components/utils.js"
 
@@ -33,6 +33,7 @@ const popUpTypeImage = document.querySelector(".popup_type_image"); //модал
 const popUpAddImage = document.querySelector(".popup_type_new-card"); //модальное окно добавления карточки
 const popUpProfile = document.querySelector(".popup_type_edit"); //модальное окно редактирования данных
 const popUpDelete = document.querySelector(".popup_type_delete"); //модальное окно удаления карточки
+const buttonDeleteCard = popUpDelete.querySelector('.popup__button');
 const popUpAddAvatar = document.querySelector(".popup_type_new-avatar");
 const avatar = document.forms["new-avatar"];
 const avatarInput = avatar.link;
@@ -84,21 +85,16 @@ loadData().then(([userDataObject, cardsDataObject]) => {
   )})
   .catch(apiErrorHandler)
 
-function handleDeleteButton(event) { //открываем модалку  для удаления карточки
-  const cardId = event.target.dataset.cardId;
-  console.log(cardId, event.target.dataset);
-  openPopUp(popUpDelete);
-  const confirmDeleteButton = document.querySelector(
-    ".popup_type_delete .popup__button"
-  );
-  confirmDeleteButton.addEventListener("click", function () {
-    deleteCardFromServer(cardId) // Вызываем функцию удаления карточки с сервера
-    .then(() => {
-    closePopUp(popUpDelete);
-    event.target.closest(".card").remove();
-    })
-    .catch(apiErrorHandler)
-  });
+let cardToDelete;
+
+buttonDeleteCard.addEventListener("click", () => {
+  deleteCard(cardToDelete)
+  closePopUp(popUpDelete)
+})
+
+function handleDeleteButton (cardElement) {
+  cardToDelete = cardElement;
+  openPopUp(popUpDelete)
 }
 
 function editPopUpProfile() {
@@ -120,11 +116,11 @@ function handleFormSubmit(evt) {
     .then(() => {
   profileTitle.textContent = userName; //заменяем дефолтные значения на странице на введенные
   profileDescription.textContent = userJob; //заменяем дефолтные значения на странице на введенные
+  closePopUp(popUpProfile); 
     })
     .catch(apiErrorHandler)
     .finally(() => {
   renderLoading(false, submitButton); // Возвращаем текст кнопки на исходное значение
-  closePopUp(popUpProfile); 
   });
 }
 
@@ -196,11 +192,11 @@ newPlace.addEventListener("submit", function (evt) {
       resp.owner._id
     )
     cardsContainer.prepend(card)
+    closePopUp(popUpAddImage); //закрываем модальное окно добавления карточек
   })
   .catch(apiErrorHandler)
   .finally(() => {
     renderLoading(false, submitButton); // Возвращаем текст кнопки на исходное значение
-    closePopUp(popUpAddImage); //закрываем модальное окно добавления карточек
     newPlace.reset(); //сбрасываем значения формы добавления карточки
   });
 });
@@ -225,12 +221,11 @@ avatar.addEventListener("submit", function (evt) {
       // Обновляем src изображения на странице
       profileImage.style.backgroundImage = `url(${data.avatar})`;
       // Закрываем модальное окно после успешного изменения аватара
-      
+      closePopUp(popUpAddAvatar);
     })
     .catch(apiErrorHandler)
     .finally(() => {
       renderLoading(false, submitButton); // Возвращаем текст кнопки на исходное значение
-      closePopUp(popUpAddAvatar);
     });
 });
 

@@ -8,11 +8,6 @@ function closePopUp(element) {
   //функция закрытия модального окна
   element.classList.remove("popup_is-opened");
   document.removeEventListener("keydown", closeByEscape); //удаляем слушатель по Esc
-  const btn = element.querySelector('.popup__button'); //ищем кнопку попапа
-  if(btn) { //если она есть
-    const clone = btn.cloneNode(true); //клонируем ее
-    btn.parentNode.replaceChild(clone, btn); //передоставляем колн на кнопку таким образом избавляемся от слушателей событий
-  }
 }
 
 function closeByEscape(event) {

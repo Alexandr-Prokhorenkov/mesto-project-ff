@@ -1,4 +1,4 @@
-import { likeCard, unlikeCard } from "./api.js";
+import { likeCard, unlikeCard, deleteCardFromServer } from "./api.js";
 import {apiErrorHandler} from "./utils.js"
 
 const setLikesCount = (cardElement, likesCount) => { //функция установки количества лайков
@@ -27,16 +27,10 @@ const createCard = ( //функция создания карточек
   cardImage.addEventListener("click", openImagecallback); //слушатель события клика на картинку
 
   const delBtn = cardElement.querySelector(".card__delete-button"); //кнопка удаления карточки
+  delBtn.addEventListener("click", () => deleteCallBack(cardElement));
+  cardElement.dataset.cardId = cardItem._id;
   if(userId !== cardItem.owner._id) { //создаем условие создания кнопки удаления
     cardElement.removeChild(delBtn) //удаляем кнопку с чужих карточек
-  }
-  else {
-    delBtn.dataset.cardId = cardItem._id; //вешаем id карточки на кнопку
-    delBtn.addEventListener("click", deleteCallBack); //слушатель события на кнопку удаления карточки
-  }
-
-  if (cardItem._id) { 
-    cardElement.dataset.cardId = cardItem._id; //передаем значение id из объекта создаваемой карточке
   }
 
   const buttonLike = cardElement.querySelector(".card__like-button"); //кнопка лайка на карточке
@@ -87,4 +81,13 @@ const handleLikeButton = (event) => {   //функция добавления л
   }
 }
 
-export { createCard, handleLikeButton };
+const deleteCard = (cardElement) => { //Функцтя удаления карточки из DOM  + с сервера
+    deleteCardFromServer(cardElement.dataset.cardId) // Вызываем функцию удаления карточки с сервера
+      .then(() => {
+        cardElement.remove();
+        console.log("Карточка успешно удалена");
+      })
+      .catch(apiErrorHandler);
+}
+
+export { createCard, handleLikeButton, deleteCard };
