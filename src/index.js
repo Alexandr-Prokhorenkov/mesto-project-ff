@@ -4,7 +4,6 @@ import {
   loadData,
   saveProfileData,
   saveCardToServer,
-  deleteCardFromServer,
   saveProfileAvatar,
 } from "./components/api.js";
 
