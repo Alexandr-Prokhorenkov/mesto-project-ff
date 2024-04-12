@@ -192,11 +192,11 @@ newPlace.addEventListener("submit", function (evt) {
     )
     cardsContainer.prepend(card)
     closePopUp(popUpAddImage); //закрываем модальное окно добавления карточек
+    newPlace.reset(); //сбрасываем значения формы добавления карточки
   })
   .catch(apiErrorHandler)
   .finally(() => {
     renderLoading(false, submitButton); // Возвращаем текст кнопки на исходное значение
-    newPlace.reset(); //сбрасываем значения формы добавления карточки
   });
 });
 
